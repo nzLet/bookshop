@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.nz.dao.OrderitemMapper">
+  <resultMap id="BaseResultMap" type="org.nz.bean.Orderitem">
+    <id column="orderItemId" jdbcType="CHAR" property="orderItemId" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="subtotal" jdbcType="DECIMAL" property="subtotal" />
+    <result column="bid" jdbcType="CHAR" property="bid" />
+    <result column="bname" jdbcType="VARCHAR" property="bname" />
+    <result column="currPrice" jdbcType="DECIMAL" property="currPrice" />
+    <result column="image_b" jdbcType="VARCHAR" property="image_b" />
+    <result column="oid" jdbcType="CHAR" property="oid" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    orderItemId, quantity, subtotal, bid, bname, currPrice, image_b, oid
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_orderitem
+    where orderItemId = #{orderItemId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_orderitem
+    where orderItemId = #{orderItemId,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="org.nz.bean.Orderitem">
+    insert into t_orderitem (orderItemId, quantity, subtotal, 
+      bid, bname, currPrice, 
+      image_b, oid)
+    values (#{orderItemId,jdbcType=CHAR}, #{quantity,jdbcType=INTEGER}, #{subtotal,jdbcType=DECIMAL}, 
+      #{bid,jdbcType=CHAR}, #{bname,jdbcType=VARCHAR}, #{currPrice,jdbcType=DECIMAL}, 
+      #{image_b,jdbcType=VARCHAR}, #{oid,jdbcType=CHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="org.nz.bean.Orderitem">
+    insert into t_orderitem
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderItemId != null">
+        orderItemId,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="subtotal != null">
+        subtotal,
+      </if>
+      <if test="bid != null">
+        bid,
+      </if>
+      <if test="bname != null">
+        bname,
+      </if>
+      <if test="currPrice != null">
+        currPrice,
+      </if>
+      <if test="image_b != null">
+        image_b,
+      </if>
+      <if test="oid != null">
+        oid,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderItemId != null">
+        #{orderItemId,jdbcType=CHAR},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="subtotal != null">
+        #{subtotal,jdbcType=DECIMAL},
+      </if>
+      <if test="bid != null">
+        #{bid,jdbcType=CHAR},
+      </if>
+      <if test="bname != null">
+        #{bname,jdbcType=VARCHAR},
+      </if>
+      <if test="currPrice != null">
+        #{currPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="image_b != null">
+        #{image_b,jdbcType=VARCHAR},
+      </if>
+      <if test="oid != null">
+        #{oid,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.nz.bean.Orderitem">
+    update t_orderitem
+    <set>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="subtotal != null">
+        subtotal = #{subtotal,jdbcType=DECIMAL},
+      </if>
+      <if test="bid != null">
+        bid = #{bid,jdbcType=CHAR},
+      </if>
+      <if test="bname != null">
+        bname = #{bname,jdbcType=VARCHAR},
+      </if>
+      <if test="currPrice != null">
+        currPrice = #{currPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="image_b != null">
+        image_b = #{image_b,jdbcType=VARCHAR},
+      </if>
+      <if test="oid != null">
+        oid = #{oid,jdbcType=CHAR},
+      </if>
+    </set>
+    where orderItemId = #{orderItemId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.nz.bean.Orderitem">
+    update t_orderitem
+    set quantity = #{quantity,jdbcType=INTEGER},
+      subtotal = #{subtotal,jdbcType=DECIMAL},
+      bid = #{bid,jdbcType=CHAR},
+      bname = #{bname,jdbcType=VARCHAR},
+      currPrice = #{currPrice,jdbcType=DECIMAL},
+      image_b = #{image_b,jdbcType=VARCHAR},
+      oid = #{oid,jdbcType=CHAR}
+    where orderItemId = #{orderItemId,jdbcType=CHAR}
+  </update>
+</mapper>

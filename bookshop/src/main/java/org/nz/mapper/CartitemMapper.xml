@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.nz.dao.CartitemMapper">
+	<resultMap id="BaseResultMap" type="org.nz.bean.Cartitem">
+		<id column="cartItemId" jdbcType="CHAR" property="cartItemId" />
+		<result column="quantity" jdbcType="INTEGER"
+			property="quantity" />
+		<result column="bid" jdbcType="CHAR" property="bid" />
+		<result column="uid" jdbcType="CHAR" property="uid" />
+		<result column="orderBy" jdbcType="INTEGER" property="orderBy" />
+	</resultMap>
+	<resultMap id="SelectAllByUidMap" type="org.nz.bean.Cartitem">
+		<id column="cartItemId" jdbcType="CHAR" property="cartItemId" />
+		<result column="quantity" jdbcType="INTEGER"
+			property="quantity" />
+		<result column="bid" jdbcType="CHAR" property="bid" />
+		<result column="uid" jdbcType="CHAR" property="uid" />
+		<result column="orderBy" jdbcType="INTEGER" property="orderBy" />
+		<association property="book" javaType="org.nz.bean.Book">
+			<id column="bid" jdbcType="CHAR" property="bid" />
+			<result column="bname" jdbcType="VARCHAR" property="bname" />
+			<result column="currPrice" jdbcType="DECIMAL"
+				property="currPrice" />
+			<result column="image_b" jdbcType="VARCHAR" property="image_b" />
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		cartItemId, quantity, bid, uid, orderBy
+	</sql>
+	
+	<!-- 通过用户id查找购物车信息 -->
+	<select id="selectAllByUid" parameterType="java.lang.String"
+		resultMap="SelectAllByUidMap">
+		select
+		c.cartItemId, c.quantity, c.bid, c.uid, c.orderBy,b.bid,b.image_b,b.bname,b.currPrice
+		from t_cartitem c,t_book b
+		where c.uid=#{uid} and c.bid=b.bid
+	</select>
+	
+	<!-- 通过图书id查购物车数据 -->
+	<select id="selectAllByBid" parameterType="org.nz.bean.Cartitem" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from t_cartitem
+		where bid=#{bid} and uid=#{uid}
+	</select>
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="SelectAllByUidMap">
+		select
+		c.cartItemId, c.quantity, c.bid, c.uid, c.orderBy,b.bid,b.image_b,b.bname,b.currPrice
+		from t_cartitem c,t_book b
+		where cartItemId = #{cartItemId,jdbcType=CHAR} and c.bid=b.bid
+	</select>
+	
+	<!-- 通过图书id来删除购物车数据 -->
+	<select id="deleteByBid" parameterType="java.lang.String">
+		delete from t_cartitem
+		where bid = #{bid,jdbcType=CHAR}
+	</select>
+	<!-- 通过多个id查多条购物车数据 -->
+	<select id="selectByIds" resultMap="SelectAllByUidMap">
+		select 
+		c.cartItemId, c.quantity, c.bid, c.uid, c.orderBy,b.bid,b.image_b,b.bname,b.currPrice
+		from t_cartitem c,t_book b
+		where c.bid=b.bid and c.cartItemId in 
+		<foreach collection="array" open="(" close=")" separator="," item="cartItemIds">
+			#{cartItemIds}
+		</foreach>
+	</select>
+	
+	<!-- 通过多个id删除多条购物车数据 -->
+	<delete id="deleteByIds" >
+		delete from t_cartitem
+		where cartItemId in
+		<foreach collection="array" open="(" close=")" separator="," item="cartItemIds">
+			#{cartItemIds}
+		</foreach>
+	</delete>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_cartitem
+		where cartItemId = #{cartItemId,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="org.nz.bean.Cartitem">
+		insert into t_cartitem (cartItemId, quantity, bid,
+		uid, orderBy)
+		values (#{cartItemId,jdbcType=CHAR}, #{quantity,jdbcType=INTEGER},
+		#{bid,jdbcType=CHAR},
+		#{uid,jdbcType=CHAR}, #{orderBy,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="org.nz.bean.Cartitem">
+		insert into t_cartitem
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="cartItemId != null">
+				cartItemId,
+			</if>
+			<if test="quantity != null">
+				quantity,
+			</if>
+			<if test="bid != null">
+				bid,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="orderBy != null">
+				orderBy,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="cartItemId != null">
+				#{cartItemId,jdbcType=CHAR},
+			</if>
+			<if test="quantity != null">
+				#{quantity,jdbcType=INTEGER},
+			</if>
+			<if test="bid != null">
+				#{bid,jdbcType=CHAR},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=CHAR},
+			</if>
+			<if test="orderBy != null">
+				#{orderBy,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="org.nz.bean.Cartitem">
+		update t_cartitem
+		<set>
+			<if test="quantity != null">
+				quantity = #{quantity,jdbcType=INTEGER},
+			</if>
+			<if test="bid != null">
+				bid = #{bid,jdbcType=CHAR},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=CHAR},
+			</if>
+			<if test="orderBy != null">
+				orderBy = #{orderBy,jdbcType=INTEGER},
+			</if>
+		</set>
+		where cartItemId = #{cartItemId,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="org.nz.bean.Cartitem">
+		update t_cartitem
+		set quantity = #{quantity,jdbcType=INTEGER},
+		bid = #{bid,jdbcType=CHAR},
+		uid = #{uid,jdbcType=CHAR},
+		orderBy = #{orderBy,jdbcType=INTEGER}
+		where cartItemId = #{cartItemId,jdbcType=CHAR}
+	</update>
+</mapper>

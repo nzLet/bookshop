@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.nz.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="org.nz.bean.User">
+    <id column="uid" jdbcType="CHAR" property="uid" />
+    <result column="loginname" jdbcType="VARCHAR" property="loginname" />
+    <result column="loginpass" jdbcType="VARCHAR" property="loginpass" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="retime" jdbcType="TIMESTAMP" property="retime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="activationCode" jdbcType="CHAR" property="activationCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uid, loginname, loginpass, email, status, activationCode ,retime
+  </sql>
+  <select id="findByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where loginname = #{loginname,jdbcType=CHAR} and status = 1
+  
+  </select>
+  <!-- 用户名查用户 -->
+  <select id="findByLoginName" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where loginname = #{loginname,jdbcType=CHAR}
+  </select>
+  <!-- 邮箱查用户 -->
+  <select id="findByEmail" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where email = #{email,jdbcType=CHAR}
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_user
+    where uid = #{uid,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_user
+    where uid = #{uid,jdbcType=CHAR}
+  </delete>
+  <insert id="insert" parameterType="org.nz.bean.User">
+    insert into t_user (uid, loginname, loginpass, 
+      email, status, activationCode, retime
+      )
+    values (#{uid,jdbcType=CHAR}, #{loginname,jdbcType=VARCHAR}, #{loginpass,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{status,jdbcType=BIT}, #{activationCode,jdbcType=CHAR},#{retime,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="org.nz.bean.User">
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="loginname != null">
+        loginname,
+      </if>
+      <if test="loginpass != null">
+        loginpass,
+      </if>
+      <if test="email != null">
+        email,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="activationCode != null">
+        activationCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        #{uid,jdbcType=CHAR},
+      </if>
+      <if test="loginname != null">
+        #{loginname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpass != null">
+        #{loginpass,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="activationCode != null">
+        #{activationCode,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <!-- 通过激活码改状态 -->
+  <update id="updateByActivationCode" parameterType="org.nz.bean.User">
+  	update t_user set
+  	status = #{status,jdbcType=BIT}
+  	 where activationCode = #{activationCode,jdbcType=CHAR}
+  	 and (now() between retime and date_add(retime,interval #{VALID_TIME} minute))
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="org.nz.bean.User">
+    update t_user
+    <set>
+      <if test="loginname != null">
+        loginname = #{loginname,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpass != null">
+        loginpass = #{loginpass,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null">
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="activationCode != null">
+        activationCode = #{activationCode,jdbcType=CHAR},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.nz.bean.User">
+    update t_user
+    set loginname = #{loginname,jdbcType=VARCHAR},
+      loginpass = #{loginpass,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      status = #{status,jdbcType=BIT},
+      activationCode = #{activationCode,jdbcType=CHAR}
+    where uid = #{uid,jdbcType=CHAR}
+  </update>
+</mapper>

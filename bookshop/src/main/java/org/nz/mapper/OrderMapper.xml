@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.nz.dao.OrderMapper">
+	<resultMap id="BaseResultMap" type="org.nz.bean.Order">
+		<id column="oid" jdbcType="CHAR" property="oid" />
+		<result column="ordertime" jdbcType="CHAR" property="ordertime" />
+		<result column="total" jdbcType="DECIMAL" property="total" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="uid" jdbcType="CHAR" property="uid" />
+	</resultMap>
+	<resultMap id="OrderMap" type="org.nz.bean.Order">
+		<id column="oid" jdbcType="CHAR" property="oid" />
+		<result column="ordertime" jdbcType="CHAR" property="ordertime" />
+		<result column="total" jdbcType="DECIMAL" property="total" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="uid" jdbcType="CHAR" property="uid" />
+		<collection property="orderItemList" ofType="org.nz.bean.Orderitem">
+			<id column="orderItemId" jdbcType="CHAR" property="orderItemId" />
+		    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+		    <result column="subtotal" jdbcType="DECIMAL" property="subtotal" />
+		    <result column="bid" jdbcType="CHAR" property="bid" />
+		    <result column="bname" jdbcType="VARCHAR" property="bname" />
+		    <result column="currPrice" jdbcType="DECIMAL" property="currPrice" />
+		    <result column="image_b" jdbcType="VARCHAR" property="image_b" />
+		</collection>
+	</resultMap>
+	<sql id="Base_Column_List">
+		oid, ordertime, total, status, address, uid
+	</sql>
+	<!-- 根据用户id查找所有的订单按时间的降序排列 -->
+	<select id="selectbyUid" parameterType="java.lang.String" resultMap="OrderMap">
+		select * from t_orderitem oi,t_order o 
+		where oi.oid=o.oid and o.uid=#{uid} order by o.ordertime desc
+	</select>
+	<!-- 查找所有的订单按时间的降序排列 -->
+	<select id="selectAll" resultMap="OrderMap">
+		select * from t_orderitem oi,t_order o where oi.oid=o.oid order by o.ordertime desc
+	</select>
+	<!-- 根据订单状态查找所有的订单按时间的降序排列 -->
+	<select id="selectByStatus" resultMap="OrderMap">
+		select * from t_orderitem oi,t_order o 
+		where oi.oid=o.oid and o.status=#{status} order by o.ordertime desc
+	</select>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="OrderMap">
+		select * from t_orderitem oi,t_order o 
+		where oi.oid=o.oid and o.oid=#{oid}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_order
+		where oid = #{oid,jdbcType=CHAR}
+	</delete>
+	<insert id="insert" parameterType="org.nz.bean.Order">
+		insert into t_order (oid, ordertime, total,
+		status, address, uid)
+		values (#{oid,jdbcType=CHAR}, #{ordertime,jdbcType=CHAR},
+		#{total,jdbcType=DECIMAL},
+		#{status,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{uid,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="org.nz.bean.Order">
+		insert into t_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="oid != null">
+				oid,
+			</if>
+			<if test="ordertime != null">
+				ordertime,
+			</if>
+			<if test="total != null">
+				total,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="oid != null">
+				#{oid,jdbcType=CHAR},
+			</if>
+			<if test="ordertime != null">
+				#{ordertime,jdbcType=CHAR},
+			</if>
+			<if test="total != null">
+				#{total,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="org.nz.bean.Order">
+		update t_order
+		<set>
+			<if test="ordertime != null">
+				ordertime = #{ordertime,jdbcType=CHAR},
+			</if>
+			<if test="total != null">
+				total = #{total,jdbcType=DECIMAL},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=CHAR},
+			</if>
+		</set>
+		where oid = #{oid,jdbcType=CHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="org.nz.bean.Order">
+		update t_order
+		set ordertime = #{ordertime,jdbcType=CHAR},
+		total = #{total,jdbcType=DECIMAL},
+		status = #{status,jdbcType=INTEGER},
+		address = #{address,jdbcType=VARCHAR},
+		uid = #{uid,jdbcType=CHAR}
+		where oid = #{oid,jdbcType=CHAR}
+	</update>
+</mapper>

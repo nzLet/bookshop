@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx 
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop 
+         http://www.springframework.org/schema/aop/spring-aop.xsd"> 
+         
+	<!-- 添加注解配置 -->
+	<context:annotation-config />    
+	<!-- 1.spring配置文件找到其他配置文件 -->  
+	<context:property-placeholder location="classpath:*.properties" />
+	<!-- 2.开启扫描 不扫Controller -->
+ 	<context:component-scan base-package="org.nz" />
+ 	
+   	<!-- 3.创建dbcp datasource 数据源对象 -->
+   
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"> 
+	   		<property name="driverClassName" value="${jdbc.driver}"></property>
+	   		<property name="url" value="${jdbc.url}"></property>
+	   		<property name="username" value="${jdbc.username}"></property>
+	   		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+	<!-- 4.数据库的事务控制 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+		
+	</bean>
+	<!-- 定义事务的处理切入点 -->
+	<aop:config expose-proxy="true">
+		<aop:pointcut expression="execution(* org.nz.service.*.*(..))" id="pointCut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointCut"/>
+	</aop:config>
+	<!-- 事务配置的声明 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 增 -->
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<!-- 删 -->
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<!-- 改-->
+			<tx:method name="edit*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="change*" propagation="REQUIRED" />
+			<!-- 查 -->
+			<tx:method name="select*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="get*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="list*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="find*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	<!-- 5.整合mybatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载mybatis配置 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	 	<property name="dataSource" ref="dataSource"></property>
+	 	<property name="mapperLocations" value="classpath:org/nz/mapper/*.xml"></property>
+	 	
+	</bean>
+	<!-- 让spring扫描mapper -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="org.nz.dao"></property>
+	 	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	 	
+	</bean>
+</beans>
